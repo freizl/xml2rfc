@@ -208,7 +208,8 @@ def main():
                            help='reduce prepped xml to unprepped')
     formatgroup.add_argument('--info', action='store_true',
                            help='generate a JSON file with anchor to section lookup information')
-
+    formatgroup.add_argument('--texinfo', action='store_true',
+                           help='outputs Texinfo (.texi) to file') 
 
     plain_options = optionparser.add_argument_group('Generic Switch Options')
     plain_options.add_argument('-C', '--clear-cache', action='store_true', default=False,
@@ -457,7 +458,7 @@ def main():
             options.output_path = options.basename
             options.basename = None
     #
-    num_formats = len([ o for o in [options.raw, options.text, options.nroff, options.html, options.expand, options.use_bib, options.v2v3, options.preptool, options.info, options.pdf, options.unprep ] if o])
+    num_formats = len([ o for o in [options.raw, options.text, options.nroff, options.html, options.expand, options.use_bib, options.v2v3, options.preptool, options.info, options.pdf, options.unprep, options.textinfo ] if o])
     if num_formats > 1 and (options.filename or options.output_filename):
         sys.exit('Cannot use an explicit output filename when generating more than one format, '
                  'use --path instead.')
@@ -767,7 +768,21 @@ def main():
                 writer = xml2rfc.PdfWriter(xmlrfc, options=options, date=options.date)
                 writer.write(filename)
                 options.output_filename = None
-
+        if options.texinfo:
+            xmlrfc = parser.parse(remove_comments=False, quiet=True, add_xmlns=True)
+            filename = options.output_filename
+            if not filename:
+                filename = basename + '.texi'
+                options.output_filename = filename
+            if not xmlrfc.tree.getroot().get('prepTime'):
+                v2v3 = xml2rfc.V2v3XmlWriter(xmlrfc, options=options, date=options.date)
+                xmlrfc.tree = v2v3.convert2to3()
+                prep = xml2rfc.PrepToolWriter(xmlrfc, options=options, date=options.date, liberal=True, keep_pis=[xml2rfc.V3_PI_TARGET])
+                xmlrfc.tree = prep.prep()
+            if xmlrfc.tree:
+                writer = xml2rfc.TexinfoWriter(xmlrfc, options=options, date=options.date)
+                writer.write(filename)
+        
         if options.info:
             xmlrfc = parser.parse(remove_comments=False, quiet=True)
             filename = options.output_filename
