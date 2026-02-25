@@ -15,11 +15,12 @@ from xml2rfc.writers.pdf import PdfWriter
 from xml2rfc.writers.unprep import UnPrepWriter
 from xml2rfc.writers.doc import DocWriter
 from xml2rfc.writers.bib import DatatrackerToBibConverter
+from xml2rfc.writers.texinfo import TexinfoWriter
 
 # This defines what 'from xml2rfc.writers import *' actually imports:
 __all__ = ['BaseRfcWriter', 'RawTextRfcWriter', 'PaginatedTextRfcWriter',
            'HtmlRfcWriter', 'NroffRfcWriter', 'ExpandedXmlWriter',
            'RfcWriterError', 'V2v3XmlWriter', 'PrepToolWriter', 'TextWriter',
            'HtmlWriter', 'PdfWriter', 'ExpandV3XmlWriter', 'UnPrepWriter', 
-           'DocWriter', 'DatatrackerToBibConverter',
+           'DocWriter', 'DatatrackerToBibConverter', 'TextInfoWriter',
        ]
